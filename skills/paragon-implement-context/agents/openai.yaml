@@ -1,0 +1,7 @@
+interface:
+  display_name: "Implement Agent OS Context API"
+  short_description: "Add permission-aware search to your app"
+  default_prompt: "Use $paragon-implement-context to add Context API onboarding, search, and passage reads to this app."
+  icon_small: "./assets/paragon.jpg"
+  icon_large: "./assets/paragon.jpg"
+  brand_color: "#6645e6"

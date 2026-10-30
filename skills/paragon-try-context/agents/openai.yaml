@@ -1,0 +1,7 @@
+interface:
+  display_name: "Try Agent OS Context API"
+  short_description: "Search your synced content from the terminal"
+  default_prompt: "Use $paragon-try-context to set up my Paragon credentials and run a Context API search."
+  icon_small: "./assets/paragon.jpg"
+  icon_large: "./assets/paragon.jpg"
+  brand_color: "#6645e6"

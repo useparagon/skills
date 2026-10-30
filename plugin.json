@@ -1,0 +1,38 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "author": {
+    "email": "team@useparagon.com",
+    "name": "Paragon"
+  },
+  "description": "Try and implement the Paragon Agent OS Context API and Tools API: guided credential setup with curl, and codebase integration that reuses existing Paragon JWT signing.",
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "brandColor": "#6645e6",
+        "brandColorDark": "#6645e6",
+        "capabilities": [],
+        "category": "Developer Tools",
+        "composerIcon": "./assets/paragon.jpg",
+        "defaultPrompt": [
+          "Help me try the Context API with my Paragon project.",
+          "Help me try the Tools API with my Paragon project.",
+          "Help me implement the Context API in my application.",
+          "Help me implement the Tools API in my application."
+        ],
+        "developerName": "Paragon Product",
+        "displayName": "Paragon Agent OS",
+        "logo": "./assets/paragon.jpg",
+        "longDescription": "Four skills: try the Context API or Tools API from the terminal (dashboard setup, secure signing-key storage, curl requests), or implement either API in an existing app (reuse its JWT signing, add the required aud claim, wire permission-aware search or tool discovery and execution, and test).",
+        "shortDescription": "Try and implement Context API and Tools API"
+      }
+    }
+  },
+  "keywords": [
+    "paragon",
+    "agent-os",
+    "context-api",
+    "tools-api"
+  ],
+  "name": "paragon-agent-os",
+  "version": "2.0.0"
+}

@@ -1,0 +1,7 @@
+interface:
+  display_name: "Implement Agent OS Tools API"
+  short_description: "Add tool discovery and execution to your app"
+  default_prompt: "Use $paragon-implement-tools to add Tools API discovery, execution, and result retrieval to this app."
+  icon_small: "./assets/paragon.jpg"
+  icon_large: "./assets/paragon.jpg"
+  brand_color: "#6645e6"

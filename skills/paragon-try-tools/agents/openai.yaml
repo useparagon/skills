@@ -1,0 +1,7 @@
+interface:
+  display_name: "Try Agent OS Tools API"
+  short_description: "Find and run tools from the terminal"
+  default_prompt: "Use $paragon-try-tools to set up my Paragon credentials and run a Tools API search and execution."
+  icon_small: "./assets/paragon.jpg"
+  icon_large: "./assets/paragon.jpg"
+  brand_color: "#6645e6"
