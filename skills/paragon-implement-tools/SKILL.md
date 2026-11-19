@@ -34,6 +34,7 @@ The Paragon User Token is an RS256 JWT signed with the project's signing key:
 - If no signer exists, add one in the backend, reading `PARAGON_PROJECT_ID` and `PARAGON_SIGNING_KEY` (or the app's existing naming). Keep the key server-side only: no client-exposed env prefixes (`NEXT_PUBLIC_`, `VITE_`), no committed values. Add empty placeholders to `.env.example`. Handle PEM keys stored with literal `\n`.
 - Always set `aud`. If the project ID isn't configured, throw instead of minting a token without it.
 - Make the region one setting (e.g. `PARAGON_REGION=us|eu`) that picks every Paragon host, rather than separate URL variables.
+- If the Paragon MCP (`https://developer-mcp.useparagon.com/mcp`) isn't connected and you're in Cursor, Claude Code, Codex/ChatGPT, or GitHub Copilot (the only hosts it supports today), suggest connecting it: it's the quickest way to find the project ID, and the `paragon-try-tools` skill has the setup steps. If it is connected, `list_projects` gives the project ID for `PARAGON_PROJECT_ID`. The MCP never returns signing keys, so the user still gets the key from **Settings > SDK Setup** in the dashboard and stores it themselves. Don't mint a token with the MCP and hardcode it into the app: the app has to sign its own tokens.
 
 ## 3. Endpoints
 
@@ -70,6 +71,6 @@ Errors look like `{ error: { code, message, hint, retryable, requestId, retryAft
 
 ## 6. Verify
 
-Write tests in the app's existing framework with the HTTP layer mocked: token claims (`sub`, `aud`, RS256), a `202` → running → completed sequence with exactly one POST, the approval gate blocking a `send` tool, `inline: null`, stored results paged with a continuation token, and failed/timeout statuses. Run them. If the user has credentials configured and wants a live check, the `paragon-try-tools` skill can exercise their project from the terminal.
+Write tests in the app's existing framework with the HTTP layer mocked: token claims (`sub`, `aud`, RS256), a `202` → running → completed sequence with exactly one POST, the approval gate blocking a `send` tool, `inline: null`, stored results paged with a continuation token, and failed/timeout statuses. Run them. If the user has credentials configured and wants a live check, the `paragon-try-tools` skill can exercise their project from the terminal. It also covers connecting the Paragon MCP, which can activate integrations, create a Setup Link, and mint a short-lived test token for a Development project.
 
 Report what you changed, the env vars the user must set, and what was tested with mocks versus live.

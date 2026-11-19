@@ -22,7 +22,7 @@
         "developerName": "Paragon Product",
         "displayName": "Paragon Agent OS",
         "logo": "./assets/paragon.jpg",
-        "longDescription": "Four skills: try the Context API or Tools API from the terminal (dashboard setup, secure signing-key storage, curl requests), or implement either API in an existing app (reuse its JWT signing, add the required aud claim, wire permission-aware search or tool discovery and execution, and test).",
+        "longDescription": "Five skills: start here to triage what you need and get a recommended next step, try the Context API or Tools API from the terminal (dashboard setup, secure signing-key storage, curl requests), or implement either API in an existing app (reuse its JWT signing, add the required aud claim, wire permission-aware search or tool discovery and execution, and test).",
         "shortDescription": "Try and implement Context API and Tools API"
       }
     }
