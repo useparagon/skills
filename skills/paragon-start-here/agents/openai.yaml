@@ -1,0 +1,7 @@
+interface:
+  display_name: "Start with Paragon Agent OS"
+  short_description: "Find the right Agent OS next step"
+  default_prompt: "Use $paragon-start-here to help me figure out whether and how to use Paragon Agent OS."
+  icon_small: "./assets/paragon.jpg"
+  icon_large: "./assets/paragon.jpg"
+  brand_color: "#6645e6"

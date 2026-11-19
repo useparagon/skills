@@ -1,11 +1,11 @@
 ---
 name: paragon-try-tools
-description: Walk a developer through trying the Paragon Agent OS Tools API from their terminal with curl. Covers getting a Project ID and signing key from the Paragon dashboard, storing the key safely, connecting an app, searching for tools, running one, and reading its results. Use when someone wants to try, test, or demo Tools API search and execution; use paragon-implement-tools to build it into an app.
+description: Walk a developer through trying the Paragon Agent OS Tools API from their terminal with curl. Covers connecting the Paragon MCP (or, as a fallback, getting a Project ID and signing key from the Paragon dashboard and storing the key safely), connecting an app, searching for tools, running one, and reading its results. Use when someone wants to try, test, or demo Tools API search and execution; use paragon-implement-tools to build it into an app.
 ---
 
 # Try the Paragon Tools API
 
-Get the user from zero to a real tool run in their own Paragon project, using `curl`. API calls need a signed JWT, so [scripts/paragon-env.sh](scripts/paragon-env.sh) mints one with `openssl` (no other dependencies) and loads `$PARAGON_TOKEN`, `$AGENTOS_URL`, `$ZEUS_URL`, and `$PARAGON_PROJECT_ID`. Shell state doesn't carry over between commands, so start every call with `source <this skill's dir>/scripts/paragon-env.sh &&`. Below, `$T` stands for `$AGENTOS_URL/api/tools/projects/$PARAGON_PROJECT_ID`. Define it inline: `T="$AGENTOS_URL/api/tools/projects/$PARAGON_PROJECT_ID"`.
+Get the user from zero to a real tool run in their own Paragon project, using `curl`. If the user isn't sure whether they need the Tools API, Context API, or both, use `paragon-start-here` first. Start with "Fastest path: connect the Paragon MCP" below and recommend it if it isn't connected. Without the MCP, API calls need a signed JWT, so [scripts/paragon-env.sh](scripts/paragon-env.sh) mints one with `openssl` (no other dependencies) and loads `$PARAGON_TOKEN`, `$AGENTOS_URL`, `$ZEUS_URL`, and `$PARAGON_PROJECT_ID`. Shell state doesn't carry over between commands, so start every call with `source <this skill's dir>/scripts/paragon-env.sh &&`. Below, `$T` stands for `$AGENTOS_URL/api/tools/projects/$PARAGON_PROJECT_ID`. Define it inline: `T="$AGENTOS_URL/api/tools/projects/$PARAGON_PROJECT_ID"`.
 
 ## Rules for secrets and actions
 
@@ -13,7 +13,60 @@ Get the user from zero to a real tool run in their own Paragon project, using `c
 - The key lives in `~/.paragon/signing-key.pem` (mode 600), outside any repository.
 - Tools act on the user's real accounts. Run `read` tools freely. Before running any tool whose `sideEffect` is `write`, `delete`, `send`, or `unknown`, show the user the tool and its exact args and wait for a yes.
 
-## 1. Collect settings from the dashboard
+## Fastest path: connect the Paragon MCP
+
+The Paragon Developer MCP signs the user in through the Paragon dashboard (browser consent) and lets you list their projects, add integrations, create Setup Links, and mint short-lived User Tokens. With it there is no signing key to download and no env file to write.
+
+**Check first.** Before step 1, see whether the `paragon` MCP tools (such as `list_projects`) are available. If they are, use this path. If they aren't and you're running in a supported host (listed below), don't jump to the manual path. Tell the user the MCP is the quickest way to get started (no key to find, download, or store), and ask if they'd like to connect it now. Offer to add the config entry yourself when you can edit their MCP settings, otherwise show them the snippet below. Use the manual path in steps 1 and 2 only if they decline, can't sign in, or their project isn't supported (see Tools below).
+
+**Connect.** The server URL is `https://developer-mcp.useparagon.com/mcp`. Don't put a token in the config; the client signs in through the browser.
+
+- Cursor: add to `.cursor/mcp.json` (or `~/.cursor/mcp.json` for all projects). Cursor doesn't support dynamic client discovery yet, so the `auth.CLIENT_ID` line is required. Without it the sign-in fails.
+
+  ```json
+  {
+    "mcpServers": {
+      "paragon": {
+        "url": "https://developer-mcp.useparagon.com/mcp",
+        "auth": {
+          "CLIENT_ID": "paragon-cursor"
+        }
+      }
+    }
+  }
+  ```
+
+- Claude Code: `claude mcp add --transport http paragon https://developer-mcp.useparagon.com/mcp`, then run `/mcp` to sign in.
+- Codex/ChatGPT and GitHub Copilot: add it as a remote HTTP MCP server with that URL and complete the browser sign-in.
+
+The MCP currently works with only these hosts: Cursor, Claude Code, Codex/ChatGPT, and GitHub Copilot. If the user is on a different client, use the manual path in steps 1 and 2 instead.
+
+The user signs in or registers on the Paragon page, reviews the permissions, and clicks **Allow access**. If the `paragon` tools don't appear afterward, ask them to reload or restart the session, then pick up this skill again from the flow below.
+
+**Tools.**
+
+| Tool | Use |
+| --- | --- |
+| `list_projects` | Find the Project ID (`id`). |
+| `get_active_integrations` | See which integrations the project already has. |
+| `search_available_integrations` | Find an integration's slug in the catalog. |
+| `activate_integration` | Add and turn on an integration. Ask before running it, because it changes project settings. |
+| `generate_setup_link` | Create the hosted link that connects an app for a test user. |
+| `mint_user_token` | Get a short-lived User Token (60-900 seconds, default 900) for a test user. |
+
+The integration tools and `mint_user_token` work on **Development** projects only. `list_projects` and `generate_setup_link` work on any project. If the user's project isn't listed, isn't a Development project, or `mint_user_token` reports no stored signing key, use the manual path below.
+
+**Flow.**
+
+1. Call `list_projects` and confirm which Development project to use with the user.
+2. Pick the test user ID as in step 1 below.
+3. If `get_active_integrations` doesn't show the app they want, find it with `search_available_integrations`, then `activate_integration` after they agree.
+4. Connect the app with `generate_setup_link` (`projectId`, `endUserId`, and `integrations` such as `["jira"]`). Show the returned `url` only to the user and wait for them to finish. This replaces the Setup Link curl in step 3.
+5. Call `mint_user_token` with the same `projectId` and `endUserId`. Use it as the Bearer token in the calls from step 3 onward, with `AGENTOS_URL=https://agentos.useparagon.com`. Pass it straight into the `Authorization` header: don't echo it, write it to a file, or repeat it in chat. Mint a new one when it expires.
+
+Skip steps 1 and 2 below when you use this path.
+
+## 1. Collect settings from the dashboard (manual path)
 
 Ask the user for, or have them confirm:
 
@@ -32,7 +85,7 @@ PARAGON_REGION=us
 EOF
 ```
 
-## 2. Store the signing key
+## 2. Store the signing key (manual path)
 
 If the user already keeps the project's signing key in a file, add `PARAGON_SIGNING_KEY_PATH=<path>` to the env file instead of copying the key.
 
