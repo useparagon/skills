@@ -1,7 +1,7 @@
 ---
-
-## name: paragon-start-here
+name: paragon-start-here
 description: Intake and triage for people new to Paragon Agent OS. Asks a few short questions about what they're building (Context, Tools, or both), which apps and users are involved, and where they are in the process, then recommends actionable next steps and points them to the right docs pages. Use when someone asks what Agent OS is, whether it fits their use case, where to start, or wants to learn more; next steps include paragon-try-context, paragon-try-tools, paragon-implement-context, and paragon-implement-tools.
+---
 
 # Start here with Paragon Agent OS
 
